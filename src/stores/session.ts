@@ -66,7 +66,8 @@ export const useSessionStore = defineStore('session', () => {
 
     // Set up realtime channel
     if (channel.value) {
-      await supabase.removeChannel(channel.value)
+      await channel.value.untrack()
+      await supabase.removeChannel(channel.value as any)
     }
 
     const newChannel = supabase
@@ -91,10 +92,10 @@ export const useSessionStore = defineStore('session', () => {
         
         participants.value = newParticipants
       })
-      .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+      .on('presence', { event: 'join' }, ({ newPresences }) => {
         console.log('User joined:', newPresences)
       })
-      .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+      .on('presence', { event: 'leave' }, ({ leftPresences }) => {
         console.log('User left:', leftPresences)
         // Check if session should expire (all participants left)
         setTimeout(() => {
@@ -170,7 +171,8 @@ export const useSessionStore = defineStore('session', () => {
   // Expire session (clean up when all participants leave)
   const expireSession = async () => {
     if (channel.value) {
-      await supabase.removeChannel(channel.value)
+      await channel.value.untrack()
+      await supabase.removeChannel(channel.value as any)
       channel.value = null
     }
     participants.value.clear()
@@ -182,7 +184,7 @@ export const useSessionStore = defineStore('session', () => {
   const leaveSession = async () => {
     if (channel.value) {
       await channel.value.untrack()
-      await supabase.removeChannel(channel.value)
+      await supabase.removeChannel(channel.value as any)
       channel.value = null
     }
     participants.value.clear()
