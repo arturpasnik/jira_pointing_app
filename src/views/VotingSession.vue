@@ -10,13 +10,22 @@
       
       <!-- Main Content -->
       <div class="flex-1 flex flex-col p-8 overflow-y-auto relative">
-        <!-- Logout Button -->
-        <button
-          @click="handleLogout"
-          class="absolute top-8 right-8 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors shadow-md"
-        >
-          Logout
-        </button>
+        <!-- Top Right Buttons -->
+        <div class="absolute top-8 right-8 flex gap-2">
+          <button
+            v-if="sessionStore.isAdmin"
+            @click="handleReset"
+            class="bg-blue-700 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors shadow-md"
+          >
+            Reset Votes
+          </button>
+          <button
+            @click="handleLogout"
+            class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors shadow-md"
+          >
+            Logout
+          </button>
+        </div>
         
         <div class="max-w-4xl mx-auto w-full">
           <div class="mb-6">
