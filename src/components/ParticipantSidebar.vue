@@ -8,7 +8,10 @@
         class="p-3 bg-white dark:bg-gray-700 rounded-lg shadow-sm"
       >
         <div class="flex items-center justify-between">
-          <span class="text-gray-900 dark:text-white font-medium">{{ participant.name }}</span>
+          <span class="text-gray-900 dark:text-white font-medium">
+            {{ participant.name }}
+            <span v-if="participant.role === 'Admin'" class="text-xs text-blue-600 dark:text-blue-400 ml-1">(Admin)</span>
+          </span>
           <span
             v-if="participant.vote !== null"
             class="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded"

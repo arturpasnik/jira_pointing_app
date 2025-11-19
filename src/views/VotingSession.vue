@@ -20,6 +20,14 @@
             Reset Votes
           </button>
           <button
+            v-if="sessionStore.isAdmin"
+            @click="handleFinishVoting"
+            :disabled="sessionStore.showResults"
+            class="bg-green-600 hover:bg-green-500 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-2 px-4 rounded-lg transition-colors shadow-md"
+          >
+            Finish Voting
+          </button>
+          <button
             @click="handleLogout"
             class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors shadow-md"
           >
@@ -48,12 +56,22 @@
             </div>
           </div>
 
-          <div v-if="!sessionStore.allVoted" class="mt-8">
+          <div v-if="!sessionStore.showResults" class="mt-8">
             <h2 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
-              {{ sessionStore.hasVoted ? 'Waiting for others...' : 'Select your vote' }}
+              <span v-if="sessionStore.isAdmin">You are the Admin (Voting disabled)</span>
+              <span v-else>{{ sessionStore.hasVoted ? 'Waiting for others...' : 'Select your vote' }}</span>
             </h2>
             
-            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+            <div v-if="sessionStore.isAdmin" class="text-center py-8 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+              <p class="text-gray-600 dark:text-gray-300 text-lg">
+                As an admin, you facilitate the session and do not vote.
+              </p>
+              <p class="text-gray-500 dark:text-gray-400 mt-2">
+                Waiting for {{ sessionStore.participantsArray.filter(p => p.vote === null && p.role !== 'Admin').length }} more participant(s)...
+              </p>
+            </div>
+
+            <div v-else class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
               <button
                 v-for="option in voteOptions"
                 :key="option"
@@ -78,7 +96,7 @@
                 You voted: <span class="font-bold text-lg">{{ sessionStore.participants.get(sessionStore.userId)?.vote }}</span>
               </p>
               <p class="text-sm text-gray-500 dark:text-gray-500 mt-2">
-                Waiting for {{ sessionStore.participantsArray.filter(p => p.vote === null).length }} more participant(s)...
+                Waiting for {{ sessionStore.participantsArray.filter(p => p.vote === null && p.role !== 'Admin').length }} more participant(s)...
               </p>
             </div>
           </div>
@@ -156,6 +174,10 @@ const handleVote = async (vote: number) => {
 
 const handleReset = async () => {
   await sessionStore.resetVotes()
+}
+
+const handleFinishVoting = async () => {
+  await sessionStore.finishVoting()
 }
 
 const handleLogout = async () => {
